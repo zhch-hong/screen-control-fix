@@ -1,0 +1,27 @@
+views
+  page-list -- 栏目列表
+    components -- 栏目组件
+      ChartConfig.vue -- 图表栏目配置
+      LinkConfig.vue -- 链接栏目配置
+      ListConfig.vue -- 列表栏目配置
+    page-list.vue -- 栏目列表路由文件
+  portal-list -- 门户列表
+    portal-list.vue -- 门户列表
+  preview-portal -- 门户预览
+    LanmuItem.vue -- 单个栏目文件
+    preview-portal.vue -- 门户预览路由文件
+    RenderWrap.vue -- 动态加载vue文件的渲染入口文件
+  system -- 动态引入的vue文件
+  update-portal -- 新增门户和更新门户
+    components -- 新增门户和更新门户的共用组件
+      DragItem.vue -- 拖动的栏目块文件
+      PortalBase.vue -- 门户的基础信息
+    create -- 新增门户
+      create-portal.vue -- 新增门户路由文件
+    update -- 更新门户
+      update-portal.vue -- 更新门户路由文件
+  app.scss -- 全局的样式文件
+  App.vue -- 渲染入口
+  main.js -- 入口文件
+  network.js -- 项目所有的api
+  
