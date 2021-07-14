@@ -1,54 +1,56 @@
 <template>
   <div class="page-list">
     <div class="layout-item">
-      <h4>列表栏目</h4>
-      <div class="item-list">
-        <div
-          v-for="item of lanmuList"
-          :key="item.uuid"
-          :data-uuid="item.uuid"
-          data-type="1"
-          class="item"
-          draggable="true"
-          @dragend="onItemDragend"
-        >
-          <span>
-            {{ item.page_name }}
-          </span>
+      <el-scrollbar style="height: 100%" wrapStyle="overflow-x: hidden;">
+        <h4>列表栏目</h4>
+        <div class="item-list">
+          <div
+            v-for="item of lanmuList"
+            :key="item.uuid"
+            :data-uuid="item.uuid"
+            data-type="1"
+            class="item"
+            draggable="true"
+            @dragend="onItemDragend"
+          >
+            <span>
+              {{ item.page_name }}
+            </span>
+          </div>
         </div>
-      </div>
-      <h4>链接栏目</h4>
-      <div class="item-list">
-        <div
-          v-for="item of lanmuHref"
-          :key="item.uuid"
-          :data-uuid="item.uuid"
-          data-type="2"
-          class="item"
-          draggable="true"
-          @dragend="onItemDragend"
-        >
-          <span>
-            {{ item.page_name }}
-          </span>
+        <h4>链接栏目</h4>
+        <div class="item-list">
+          <div
+            v-for="item of lanmuHref"
+            :key="item.uuid"
+            :data-uuid="item.uuid"
+            data-type="2"
+            class="item"
+            draggable="true"
+            @dragend="onItemDragend"
+          >
+            <span>
+              {{ item.page_name }}
+            </span>
+          </div>
         </div>
-      </div>
-      <h4>图表栏目</h4>
-      <div class="item-list">
-        <div
-          v-for="item of lanmuChart"
-          :key="item.uuid"
-          :data-uuid="item.uuid"
-          data-type="3"
-          class="item"
-          draggable="true"
-          @dragend="onItemDragend"
-        >
-          <span>
-            {{ item.page_name }}
-          </span>
+        <h4>图表栏目</h4>
+        <div class="item-list">
+          <div
+            v-for="item of lanmuChart"
+            :key="item.uuid"
+            :data-uuid="item.uuid"
+            data-type="3"
+            class="item"
+            draggable="true"
+            @dragend="onItemDragend"
+          >
+            <span>
+              {{ item.page_name }}
+            </span>
+          </div>
         </div>
-      </div>
+      </el-scrollbar>
     </div>
     <div class="main-container">
       <PortalBase :data="portalBase" @submit="handleSubmit" />
@@ -156,7 +158,7 @@ export default {
 
   methods: {
     fetchLanmu() {
-      const listParams = { '~table~': 'lx_sys_pages', page_type: '1', pagesize: 20, cpage: 1 };
+      const listParams = { '~table~': 'lx_sys_pages', 'page_type': '1', 'pagesize': 20, 'cpage': 1 };
       lanmuListByType(listParams)
         .then(({ data }) => {
           console.log('列表', data);
@@ -170,7 +172,7 @@ export default {
           console.warn(message);
         });
 
-      const hrefParams = { '~table~': 'lx_sys_pages', page_type: '2', pagesize: 20, cpage: 1 };
+      const hrefParams = { '~table~': 'lx_sys_pages', 'page_type': '2', 'pagesize': 20, 'cpage': 1 };
       lanmuListByType(hrefParams)
         .then(({ data }) => {
           console.log('链接', data);
@@ -184,7 +186,7 @@ export default {
           console.warn(message);
         });
 
-      const chartParams = { '~table~': 'lx_sys_pages', page_type: '3', pagesize: 20, cpage: 1 };
+      const chartParams = { '~table~': 'lx_sys_pages', 'page_type': '3', 'pagesize': 20, 'cpage': 1 };
       lanmuListByType(chartParams)
         .then(({ data }) => {
           console.log('图表', data);
@@ -385,12 +387,12 @@ export default {
 
       const params = {
         '~table~': 'lx_sys_portals',
-        portal_name: portalBase.portal_name,
-        portal_menu: portalBase.portal_menu,
-        portal_type: portalBase.portal_type,
-        background_img: portalBase.background_img,
-        is_use: 1,
-        lx_sys_portals_sub: dataList,
+        'portal_name': portalBase.portal_name,
+        'portal_menu': portalBase.portal_menu,
+        'portal_type': portalBase.portal_type,
+        'background_img': portalBase.background_img,
+        'is_use': 1,
+        'lx_sys_portals_sub': dataList,
       };
 
       createMenhu(params)
