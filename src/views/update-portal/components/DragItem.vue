@@ -52,6 +52,8 @@ export default {
       dataUUID: '',
       dataPageUUID: '',
       borderStyle: 'solid',
+      beforeDragLi: null,
+      afterDragLi: null,
       status: {
         top: 0,
         left: 0,
@@ -181,7 +183,34 @@ export default {
       UNRELATED.offsetX = e.offsetX;
       UNRELATED.offsetY = e.offsetY;
 
-      this.cacheAddress(e);
+      this.cacheAddress();
+      this.getStartPointerLi(e);
+    },
+
+    getStartPointerLi(e) {
+      const layoutRect = this.$el.parentElement.getBoundingClientRect();
+      const top = e.clientY + this.scrollTop.value - this.consumedHeight;
+      const left = e.clientX - layoutRect.left;
+      const len = this.border.value + this.margin.value;
+      const row = top / len;
+      const col = left / len;
+      console.log(row, col);
+      const li = this.getElement('REF_' + Math.ceil(row) + '_' + Math.ceil(col));
+
+      this['beforeDragLi'] = li;
+    },
+
+    getEndPointerLi() {
+      const layoutRect = this.$el.parentElement.getBoundingClientRect();
+      const top = this.client.y + this.scrollTop.value - this.consumedHeight;
+      const left = this.client.x - layoutRect.left;
+      const len = this.border.value + this.margin.value;
+      const row = top / len;
+      const col = left / len;
+      console.log(row, col);
+      const li = this.getElement('REF_' + Math.ceil(row) + '_' + Math.ceil(col));
+
+      this['afterDragLi'] = li;
     },
 
     /**
@@ -193,6 +222,12 @@ export default {
      * 根据top和left值计算出所在li元素，然后计算处栏目的top和left值
      */
     async ondragend(e) {
+      this.getEndPointerLi();
+
+      console.log(this.beforeDragLi, this.afterDragLi);
+
+      if (this.beforeDragLi === this.afterDragLi) return;
+
       this.borderStyle = 'solid';
 
       const layoutRect = this.$el.parentElement.getBoundingClientRect();

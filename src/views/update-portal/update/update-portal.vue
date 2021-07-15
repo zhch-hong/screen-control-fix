@@ -67,6 +67,7 @@
             :key="indexli"
             :ref="'REF_' + indexul + '_' + indexli"
             :style="{ width: border.value + 'px', height: border.value + 'px' }"
+            :data-gps="`${indexul}-${indexli}`"
           ></li>
         </ul>
       </div>
