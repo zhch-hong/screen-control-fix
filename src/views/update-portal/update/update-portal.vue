@@ -65,9 +65,9 @@
           <li
             v-for="indexli in 20"
             :key="indexli"
-            :ref="'REF_' + indexul + '_' + indexli"
+            :ref="'REF_' + indexli + '-' + indexul"
             :style="{ width: border.value + 'px', height: border.value + 'px' }"
-            :data-gps="`${indexul}-${indexli}`"
+            :data-gps="`${indexli}-${indexul}`"
           ></li>
         </ul>
       </div>

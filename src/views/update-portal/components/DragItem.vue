@@ -87,8 +87,8 @@ export default {
       const rx = this.endAddress.split('-')[0];
       const ry = this.endAddress.split('-')[1];
 
-      const startLi = this.getElement('REF_' + ly + '_' + lx);
-      const endLi = this.getElement('REF_' + ry + '_' + rx);
+      const startLi = this.getElement('REF_' + lx + '-' + ly);
+      const endLi = this.getElement('REF_' + rx + '-' + ry);
       const startRect = startLi.getBoundingClientRect();
       const endRect = endLi.getBoundingClientRect();
 
@@ -109,7 +109,7 @@ export default {
       if (this.dragRect) {
         const top = this.dragRect.top,
           left = this.dragRect.left;
-        const li = this.getElement('REF_' + top + '_' + left);
+        const li = this.getElement('REF_' + left + '-' + top);
         const layout = li.parentElement.parentElement;
         const liRect = li.getBoundingClientRect();
         const layoutRect = layout.getBoundingClientRect();
@@ -129,7 +129,7 @@ export default {
      * 用li元素的视窗宽高减去布局的视窗宽高，再减去栏目的top和left，得到的就是栏目的宽高
      */
     refreshSize(top, left, bottom, right) {
-      const li = this.getElement('REF_' + bottom + '_' + right);
+      const li = this.getElement('REF_' + right + '-' + bottom);
       const layout = li.parentElement.parentElement;
       const liRect = li.getBoundingClientRect();
       const layoutRect = layout.getBoundingClientRect();
@@ -178,15 +178,25 @@ export default {
      * 缓存拖动前的位置
      */
     ondragstart(e) {
+      console.log(e);
+      console.log(e.offsetX, e.offsetY);
       this.borderStyle = 'dashed';
 
       UNRELATED.offsetX = e.offsetX;
       UNRELATED.offsetY = e.offsetY;
+      const x = e.offsetX;
+      const y = e.offsetY;
+
+      // e.dataTransfer.setDragImage(e.target, 0, 0);
+      e.dataTransfer.setDragImage(e.target, x, y);
 
       this.cacheAddress();
       this.getStartPointerLi(e);
     },
 
+    /**
+     * 获取移动开始时鼠标所在的方块
+     */
     getStartPointerLi(e) {
       const layoutRect = this.$el.parentElement.getBoundingClientRect();
       const top = e.clientY + this.scrollTop.value - this.consumedHeight;
@@ -194,12 +204,14 @@ export default {
       const len = this.border.value + this.margin.value;
       const row = top / len;
       const col = left / len;
-      console.log(row, col);
-      const li = this.getElement('REF_' + Math.ceil(row) + '_' + Math.ceil(col));
+      const li = this.getElement('REF_' + Math.ceil(col) + '-' + Math.ceil(row));
 
       this['beforeDragLi'] = li;
     },
 
+    /**
+     * 获取移动结束时鼠标所在的方块
+     */
     getEndPointerLi() {
       const layoutRect = this.$el.parentElement.getBoundingClientRect();
       const top = this.client.y + this.scrollTop.value - this.consumedHeight;
@@ -207,10 +219,49 @@ export default {
       const len = this.border.value + this.margin.value;
       const row = top / len;
       const col = left / len;
-      console.log(row, col);
-      const li = this.getElement('REF_' + Math.ceil(row) + '_' + Math.ceil(col));
+      const li = this.getElement('REF_' + Math.ceil(col) + '-' + Math.ceil(row));
 
       this['afterDragLi'] = li;
+    },
+
+    /**
+     * 判断移动开始时的方块和移动结束时的方块是否在同一行或者同一列
+     *
+     * 如果在同一行，则忽略y轴方向的偏移量
+     *
+     * 如果在同一列，则忽略x轴方向的偏移量
+     */
+    validateXY() {
+      const sGPS = this.beforeDragLi.getAttribute('data-gps').split('-'),
+        eGPS = this.afterDragLi.getAttribute('data-gps').split('-');
+      const sX = sGPS[0],
+        sY = sGPS[1],
+        eX = eGPS[0],
+        eY = eGPS[1];
+
+      const xDiff = () => {
+        const df = eX - sX;
+        const dfPX = df * (this.border.value + this.margin.value);
+        this.status.left = this.status.left + dfPX;
+        return true;
+      };
+
+      const yDiff = () => {
+        const df = eY - sY;
+        const dfPX = df * (this.border.value + this.margin.value);
+        this.status.top = this.status.top + dfPX;
+        return true;
+      };
+
+      if (sX === eX && sY !== eY) {
+        return yDiff();
+      } else if (sX !== eX && sY === eY) {
+        return xDiff();
+      } else if (sX !== eX && sY !== eY) {
+        return xDiff() && yDiff();
+      } else {
+        return false;
+      }
     },
 
     /**
@@ -222,35 +273,17 @@ export default {
      * 根据top和left值计算出所在li元素，然后计算处栏目的top和left值
      */
     async ondragend(e) {
+      console.log(e, e.offsetX, e.offsetY);
+      this.borderStyle = 'solid';
       this.getEndPointerLi();
 
-      console.log(this.beforeDragLi, this.afterDragLi);
-
-      if (this.beforeDragLi === this.afterDragLi) return;
-
-      this.borderStyle = 'solid';
-
-      const layoutRect = this.$el.parentElement.getBoundingClientRect();
-
-      const top = this.client.y + this.scrollTop.value - UNRELATED.offsetY - this.consumedHeight;
-      const left = this.client.x - layoutRect.left - UNRELATED.offsetX;
-      const len = this.border.value + this.margin.value;
-      const row = top / len;
-      const col = left / len;
-
-      const li = this.getElement('REF_' + Math.ceil(row) + '_' + Math.ceil(col));
-
-      if (!li) return;
-
-      const rect = li.getBoundingClientRect();
-
-      this.status.left = rect.left - layoutRect.left;
-      this.status.top = rect.top + this.scrollTop.value - this.consumedHeight;
-
+      if (!this.validateXY()) return;
       this.setAddressData();
-      this.overflowXFix();
+      // this.overflowXFix();
 
       await this.$nextTick();
+
+      this.fixStatusByAddress();
 
       // 将位置信息提交到父级组件进行判断是否与其他栏目交错
       this.$emit('dragend', [this.startAddress, this.endAddress]);
@@ -260,12 +293,15 @@ export default {
      * 设置栏目的左上角坐标和右下角坐标
      */
     setAddressData() {
-      const sx = Math.ceil(this.status.left / (this.border.value + this.margin.value));
-      const sy = Math.ceil(this.status.top / (this.border.value + this.margin.value));
+      let sx = Math.ceil(this.status.left / (this.border.value + this.margin.value));
+      let sy = Math.ceil(this.status.top / (this.border.value + this.margin.value));
+      if (sx < 1) sx = 1;
+      if (sy < 1) sy = 1;
       this.startAddress = `${sx}-${sy}`;
 
-      const ex = Math.round((this.status.left + this.status.width) / (this.border.value + this.margin.value));
-      const ey = Math.round((this.status.top + this.status.height) / (this.border.value + this.margin.value));
+      let ex = Math.round((this.status.left + this.status.width) / (this.border.value + this.margin.value));
+      let ey = Math.round((this.status.top + this.status.height) / (this.border.value + this.margin.value));
+      if (ex > 20) ex = 20;
       this.endAddress = `${ex}-${ey}`;
     },
 
@@ -283,6 +319,24 @@ export default {
         this.status.width = w;
         this.endAddress = `${20}-${rby}`;
       }
+    },
+
+    /**
+     * 根据左上角和右下角的坐标修复栏目元素的left top width height
+     */
+    fixStatusByAddress() {
+      const layoutRect = this.$el.parentElement.getBoundingClientRect();
+      const startLi = this.getElement('REF_' + this.startAddress),
+        endLi = this.getElement('REF_' + this.endAddress);
+      console.log(startLi, endLi);
+
+      const sRect = startLi.getBoundingClientRect(),
+        eRect = endLi.getBoundingClientRect();
+
+      this.status.left = sRect.left - layoutRect.left;
+      this.status.top = sRect.top + this.scrollTop.value - this.consumedHeight;
+      this.status.width = eRect.right - sRect.left;
+      this.status.height = eRect.bottom - sRect.top;
     },
 
     /**
