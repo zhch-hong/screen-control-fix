@@ -178,17 +178,10 @@ export default {
      * 缓存拖动前的位置
      */
     ondragstart(e) {
-      console.log(e);
-      console.log(e.offsetX, e.offsetY);
       this.borderStyle = 'dashed';
 
       UNRELATED.offsetX = e.offsetX;
       UNRELATED.offsetY = e.offsetY;
-      const x = e.offsetX;
-      const y = e.offsetY;
-
-      // e.dataTransfer.setDragImage(e.target, 0, 0);
-      e.dataTransfer.setDragImage(e.target, x, y);
 
       this.cacheAddress();
       this.getStartPointerLi(e);
@@ -273,13 +266,11 @@ export default {
      * 根据top和left值计算出所在li元素，然后计算处栏目的top和left值
      */
     async ondragend(e) {
-      console.log(e, e.offsetX, e.offsetY);
       this.borderStyle = 'solid';
       this.getEndPointerLi();
 
       if (!this.validateXY()) return;
       this.setAddressData();
-      // this.overflowXFix();
 
       await this.$nextTick();
 
@@ -303,22 +294,6 @@ export default {
       let ey = Math.round((this.status.top + this.status.height) / (this.border.value + this.margin.value));
       if (ex > 20) ex = 20;
       this.endAddress = `${ex}-${ey}`;
-    },
-
-    /**
-     * 判断元素是否超出右边界
-     * 如果宽度超出了右边界，则将缩减宽度至最右边，20
-     */
-    overflowXFix() {
-      let lx = this.startAddress.split('-')[0];
-      let rx = this.endAddress.split('-')[0];
-
-      if (rx > 20) {
-        const rby = this.endAddress.split('-')[1];
-        const w = (20 - lx + 1) * this.border.value + (20 - lx) * this.margin.value;
-        this.status.width = w;
-        this.endAddress = `${20}-${rby}`;
-      }
     },
 
     /**
