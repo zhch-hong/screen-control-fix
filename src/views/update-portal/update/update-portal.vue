@@ -104,6 +104,8 @@ export default {
 
   data() {
     return {
+      /** 元素大小变化监听 */
+      resizeObserver: null,
       instanceList: [],
 
       /** 小方块（li元素）的边长 */
@@ -161,8 +163,12 @@ export default {
         }
       }
     });
-
+    this.resizeObserver = resizeObserver;
     resizeObserver.observe(this.$refs.LayoutPanel);
+  },
+
+  beforeDestroy() {
+    this.resizeObserver.disconnect();
   },
 
   methods: {
