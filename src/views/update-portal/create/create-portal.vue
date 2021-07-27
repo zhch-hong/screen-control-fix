@@ -65,8 +65,9 @@
           <li
             v-for="indexli in 20"
             :key="indexli"
-            :ref="'REF_' + indexul + '_' + indexli"
+            :ref="'REF_' + indexli + '-' + indexul"
             :style="{ width: border.value + 'px', height: border.value + 'px' }"
+            :data-gps="`${indexli}-${indexul}`"
           ></li>
         </ul>
       </div>
@@ -97,6 +98,8 @@ export default {
 
   data() {
     return {
+      /** 元素大小变化监听 */
+      resizeObserver: null,
       instanceList: [],
 
       /** 小方块（li元素）的边长 */
@@ -152,8 +155,12 @@ export default {
         }
       }
     });
-
+    this.resizeObserver = resizeObserver;
     resizeObserver.observe(this.$refs.LayoutPanel);
+  },
+
+  beforeDestroy() {
+    this.resizeObserver.disconnect();
   },
 
   methods: {

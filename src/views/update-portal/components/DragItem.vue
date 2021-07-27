@@ -303,7 +303,6 @@ export default {
       const layoutRect = this.$el.parentElement.getBoundingClientRect();
       const startLi = this.getElement('REF_' + this.startAddress),
         endLi = this.getElement('REF_' + this.endAddress);
-      console.log(startLi, endLi);
 
       const sRect = startLi.getBoundingClientRect(),
         eRect = endLi.getBoundingClientRect();
