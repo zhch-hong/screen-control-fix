@@ -20,7 +20,7 @@ function formdata(params) {
 function normalFields(params) {
   const data = {
     '~table~': 'lx_sys_dict',
-    dict_name: params,
+    'dict_name': params,
   };
   return axios.post('/api/dictionary/list-dictionary-byname/v1', formdata(data));
 }
@@ -33,7 +33,7 @@ function hightFields(params) {
   if (typeof params === 'string') {
     const data = {
       '~table~': 'lx_sys_prompt',
-      prompt_name: params,
+      'prompt_name': params,
     };
     return axios.post('/api/prompt/business/findPrompt/v1', formdata(data));
   }

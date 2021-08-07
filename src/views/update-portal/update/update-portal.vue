@@ -290,12 +290,13 @@ export default {
         // 计算出拖动到哪一个方块放置的
         const scrollY = this.$refs.LayoutPanel.scrollTop;
         const top = Math.ceil((this.client.y - CONSUMED_HEIGHT + scrollY) / (this.border.value + this.margin.value));
-        const left = Math.ceil(
+        let left = Math.ceil(
           (this.client.x - this.$refs.LayoutPanel.getBoundingClientRect().left) /
             (this.border.value + this.margin.value)
         );
-        const right = left + 1;
+        const right = left + 1 > 20 ? 20 : left + 1;
         const bottom = top + 1;
+        left = left > 20 ? 20 : left;
 
         // 创建挂载元素
         const mountEl = document.createElement('div');

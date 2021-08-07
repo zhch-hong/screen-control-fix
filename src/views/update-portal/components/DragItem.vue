@@ -269,6 +269,8 @@ export default {
       this.borderStyle = 'solid';
       this.getEndPointerLi();
 
+      if (!this.beforeDragLi || !this.afterDragLi) return;
+
       if (!this.validateXY()) return;
       this.setAddressData();
 
@@ -293,6 +295,10 @@ export default {
       let ex = Math.round((this.status.left + this.status.width) / (this.border.value + this.margin.value));
       let ey = Math.round((this.status.top + this.status.height) / (this.border.value + this.margin.value));
       if (ex > 20) ex = 20;
+
+      if (ex < sx) ex = sx;
+      if (ey < sy) ey = sy;
+
       this.endAddress = `${ex}-${ey}`;
     },
 
@@ -347,6 +353,7 @@ export default {
           document.removeEventListener('mousemove', handler);
           this.setAddressData();
           this.$nextTick(() => {
+            this.fixStatusByAddress();
             this.$emit('dragend', [this.startAddress, this.endAddress]);
           });
         },
@@ -385,6 +392,7 @@ export default {
 
           this.setAddressData();
           this.$nextTick(() => {
+            this.fixStatusByAddress();
             this.$emit('dragend', [this.startAddress, this.endAddress]);
           });
         },
